@@ -1,0 +1,39 @@
+{
+  "name": "ssh-keyman",
+  "version": "1.0.0",
+  "description": "A cli tool to manage multiple ssh keys and switch between different ssh keys with ease & grace.",
+  "main": "index.js",
+  "bin": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/shahidullahkhankhattak/ssh-keyman.git"
+  },
+  "keywords": [
+    "manage",
+    "ssh",
+    "keys",
+    "ssh",
+    "keys",
+    "generate",
+    "ssh",
+    "github",
+    "gitlab",
+    "git",
+    "ssh-keyman",
+    "keyman",
+    "key manager",
+    "ssh key manager"
+  ],
+  "author": "shahid ullah khan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shahidullahkhankhattak/ssh-keyman/issues"
+  },
+  "homepage": "https://github.com/shahidullahkhankhattak/ssh-keyman#readme",
+  "dependencies": {
+    "fs-extra": "^10.0.0"
+  }
+}
