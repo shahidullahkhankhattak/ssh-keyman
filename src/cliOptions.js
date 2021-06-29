@@ -45,6 +45,7 @@ const prepareArgs = function (argv) {
 const getName = function (argv) {
   return argv.slice(2).find((arg) => arg.charAt(0) !== "-");
 };
+
 module.exports = {
   prepareArgs,
   getName,

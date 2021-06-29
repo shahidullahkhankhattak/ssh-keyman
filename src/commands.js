@@ -81,7 +81,7 @@ const init = function () {
       KEYMAN_PATH,
       JSON.stringify({ active: "default", available: ["default"] })
     );
-    logger("success", "Activating 'default' environment");
+    logger("success", "Activated 'default' environment");
     return;
   }
   logger("success", "ssh-keyman already initialized");
@@ -118,7 +118,7 @@ const create = async function (name) {
     const ans = await question(
       ` Do you want to switch to newly created environment (${name})? `
     );
-    if (ans.toLowerCase() === "y") {
+    if (ans.toLowerCase() === "y" || ans.toLowerCase() === 'yes') {
       available.push(name);
       fs.writeFileSync(
         KEYMAN_PATH,
@@ -126,8 +126,14 @@ const create = async function (name) {
       );
       delDirSync(SSH_PATH);
       fs.mkdirSync(SSH_PATH);
-      logger("success", [`Activated environment '${name}'`]);
+      return logger("success", [`Activated environment '${name}'`]);
     }
+    available.push(name);
+    fs.writeFileSync(
+      KEYMAN_PATH,
+      JSON.stringify({ active: active, available })
+    );
+    return logger("success", [`Successfully created environment ${name}`]);
   }
 };
 
@@ -183,6 +189,8 @@ const switchEnv = function (name) {
     delAndCopySync(NEW_ENV_PATH, SSH_PATH);
     fs.writeFileSync(KEYMAN_PATH, JSON.stringify({ available, active: name }));
     logger("success", `Activated environment '${name}'`);
+  } else {
+    logger("error", `Data directory is currupt, Please try uninstalling and reinstalling the package.`);
   }
 };
 
@@ -206,6 +214,8 @@ const deleteEnv = function (name) {
       JSON.stringify({ active, available: available })
     );
     return logger("success", `Successfully deleted environment '${name}'`);
+  } else {
+    return logger("error", `Couldn't find environment '${name}'`);
   }
 };
 

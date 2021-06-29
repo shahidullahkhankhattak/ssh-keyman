@@ -1,6 +1,6 @@
 {
   "name": "ssh-keyman",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A cli tool to manage multiple ssh keys and switch between different ssh keys with ease & grace.",
   "main": "index.js",
   "bin": "index.js",
