@@ -203,7 +203,7 @@ const deleteEnv = function (name) {
   if (active === name) {
     return logger(
       "error",
-      "Cannot delete this envionment as it is currently active"
+      "Cannot delete this environment as it is currently active"
     );
   }
   if (exist && available.find((env) => env === name)) {
