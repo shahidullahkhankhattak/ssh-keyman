@@ -98,4 +98,4 @@ Contact
 * GitHub ([shahidullahkhan](http://github.com/shahidullahkhankhattak))
 * Email ([shahid@shahidullahkhan.com](mailto:shahid@shahidullahkhan.com))
 
-Made with ❤️ by Shahid Ullah Khan from Pakistan. Pakistan Zindabad!
+Made with ❤️ by Shahid Ullah Khan from Pakistan.
