@@ -1,9 +1,14 @@
 const fs = require("fs-extra");
 const os = require("os");
 const path = require("path");
-const readline = require("readline");
-const { options, consoleColors } = require("./constants");
+const inquirer = require("inquirer");
+const chalk = require("chalk");
+const autocompletePrompt = require("inquirer-autocomplete-prompt");
+const { options } = require("./constants");
 const { delAndCopySync, delDirSync } = require("./extendFs");
+
+// Register autocomplete prompt
+inquirer.registerPrompt("autocomplete", autocompletePrompt);
 
 const SSH_PATH = path.join(os.homedir(), ".ssh");
 const KEYMAN_DIR_PATH = path.join(os.homedir(), ".sshkeyman");
@@ -14,191 +19,260 @@ let KEYMAN_CONTENT = IS_INITIALIZED
   ? JSON.parse(fs.readFileSync(KEYMAN_PATH))
   : undefined;
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-const question = (q) =>
-  new Promise((resolve) => {
-    rl.question(q, (a) => {
-      resolve(a);
-    });
-  });
-
-rl.on("close", () => {
-  console.log("closed");
-});
-
 const logger = (type, message) => {
   if (Array.isArray(message)) {
     message = message.join(" ");
   }
-  let color;
   switch (type) {
-    case "success": {
-      color = consoleColors.FgGreen;
+    case "success":
+      console.log(chalk.green(message ? message : ""));
       break;
-    }
-    case "error": {
-      color = consoleColors.FgRed;
+    case "error":
+      console.log(chalk.red(message ? message : ""));
       break;
-    }
-    default: {
-      color = consoleColors.FgWhite;
+    case "warning":
+      console.log(chalk.yellow(message ? message : ""));
       break;
-    }
+    case "info":
+      console.log(chalk.cyan(message ? message : ""));
+      break;
+    default:
+      console.log(message ? message : "");
+      break;
   }
-  console.log(color, message ? message : "");
 };
 
 const help = function () {
-  logger(null, "\n");
-  logger(null, "Usage : ssh-keyman <command>", "\n");
-  logger(null, [
-    "Where <command> is one of: ",
-    options.map((op) => `-${op.option}`).join(", "),
-    "\n",
-  ]);
-  logger(null, "Commands:");
+  console.log();
+  console.log(chalk.bold.cyan("SSH KeyMan") + chalk.gray(" - SSH Key Environment Manager"));
+  console.log();
+  console.log(chalk.bold("Usage:") + " ssh-keyman <command> [options]");
+  console.log();
+  console.log(chalk.bold("Commands:"));
   for (let option of options) {
-    logger(null, option.help);
+    console.log(chalk.gray(option.help));
   }
-  logger(null, "\n");
+  console.log();
+  console.log(chalk.dim("Tip: Run commands without arguments for interactive mode"));
+  console.log();
 };
 
 const init = function () {
   if (!fs.existsSync(KEYMAN_DIR_PATH)) {
+    console.log(chalk.cyan("\n🔑 Initializing SSH KeyMan...\n"));
     fs.mkdirSync(KEYMAN_DIR_PATH);
-    logger("success", "Initialized ssh-keyman directory " + KEYMAN_DIR_PATH);
+    logger("success", "✓ Created ssh-keyman directory: " + KEYMAN_DIR_PATH);
     fs.mkdirSync(KEYMAN_DEFAULT_ENV_PATH);
     fs.copySync(SSH_PATH, KEYMAN_DEFAULT_ENV_PATH);
-    logger(
-      "success",
-      "Initialized default environment " + KEYMAN_DEFAULT_ENV_PATH
-    );
+    logger("success", "✓ Created default environment");
     fs.writeFileSync(
       KEYMAN_PATH,
       JSON.stringify({ active: "default", available: ["default"] })
     );
-    logger("success", "Activated 'default' environment");
+    logger("success", "✓ Activated 'default' environment");
+    console.log(chalk.green("\n✨ SSH KeyMan initialized successfully!\n"));
     return;
   }
-  logger("success", "ssh-keyman already initialized");
+  logger("info", "ssh-keyman is already initialized");
 };
 
 const create = async function (name) {
   if (!IS_INITIALIZED) {
-    logger("error", "ssh-keyman is not initilized \n");
-    logger(null, [
-      "Please initialize ssh-keyman using:",
-      "\n",
-      "ssh-keyman -i",
-      "\n",
-    ]);
+    logger("error", "ssh-keyman is not initialized\n");
+    logger(null, "Please initialize ssh-keyman using: ssh-keyman -i\n");
     return;
   }
   if (!name) {
-    name = await question("Enter name for the new enviroment: ");
+    const answer = await inquirer.prompt([
+      {
+        type: "input",
+        name: "envName",
+        message: "Enter name for the new environment:",
+        validate: (input) => {
+          if (!input || input.trim() === "") {
+            return "Environment name cannot be empty";
+          }
+          if (fs.existsSync(path.join(KEYMAN_DIR_PATH, input))) {
+            return "An environment with this name already exists";
+          }
+          return true;
+        },
+      },
+    ]);
+    name = answer.envName;
   }
   let { active, available } = KEYMAN_CONTENT || {};
   const exist = fs.existsSync(path.join(KEYMAN_DIR_PATH, name));
   if (exist) {
-    return logger("error", "An environment with similar name already eixsts");
+    return logger("error", "An environment with similar name already exists");
   }
   if (active) {
     delAndCopySync(SSH_PATH, path.join(KEYMAN_DIR_PATH, active));
-    logger("success", [`Saved current ssh config to ${active}`]);
+    logger("success", `Saved current ssh config to ${active}`);
     const NEW_ENV_PATH = path.join(KEYMAN_DIR_PATH, name);
     fs.mkdirSync(NEW_ENV_PATH);
-    logger("success", [
-      "Created directory for new environment : ",
-      NEW_ENV_PATH,
+    logger("success", `Created directory for new environment: ${NEW_ENV_PATH}`);
+    
+    const { switchNow } = await inquirer.prompt([
+      {
+        type: "confirm",
+        name: "switchNow",
+        message: `Do you want to switch to newly created environment (${name})?`,
+        default: true,
+      },
     ]);
-    const ans = await question(
-      ` Do you want to switch to newly created environment (${name})? `
-    );
-    if (ans.toLowerCase() === "y" || ans.toLowerCase() === 'yes') {
-      available.push(name);
+    
+    available.push(name);
+    if (switchNow) {
       fs.writeFileSync(
         KEYMAN_PATH,
         JSON.stringify({ active: name, available })
       );
       delDirSync(SSH_PATH);
       fs.mkdirSync(SSH_PATH);
-      return logger("success", [`Activated environment '${name}'`]);
+      return logger("success", `Activated environment '${name}'`);
     }
-    available.push(name);
     fs.writeFileSync(
       KEYMAN_PATH,
       JSON.stringify({ active: active, available })
     );
-    return logger("success", [`Successfully created environment ${name}`]);
+    return logger("success", `Successfully created environment ${name}`);
   }
 };
 
 const list = function () {
   if (!IS_INITIALIZED) {
-    logger("error", "ssh-keyman is not initilized \n");
-    logger(null, [
-      "Please initialize ssh-keyman using:",
-      "\n",
-      "ssh-keyman -i",
-      "\n",
-    ]);
+    logger("error", "ssh-keyman is not initialized\n");
+    logger(null, "Please initialize ssh-keyman using: ssh-keyman -i\n");
     return;
   }
-  logger(null, "\nAvailable environments:");
+  console.log(chalk.bold("\nAvailable environments:"));
   if (KEYMAN_CONTENT) {
     const { active, available } = KEYMAN_CONTENT;
     available.forEach((env) => {
       if (env === active) {
-        logger("success", `*${env}`);
+        console.log(chalk.green(`  ✓ ${env}`) + chalk.gray(" (active)"));
       } else {
-        logger(null, env);
+        console.log(chalk.white(`  • ${env}`));
       }
     });
   }
-  logger(null);
+  console.log();
 };
 
-const switchEnv = function (name) {
+const switchEnv = async function (name) {
   if (!IS_INITIALIZED) {
-    logger("error", "ssh-keyman is not initilized \n");
-    logger(null, [
-      "Please initialize ssh-keyman using:",
-      "\n",
-      "ssh-keyman -i",
-      "\n",
-    ]);
+    logger("error", "ssh-keyman is not initialized\n");
+    logger(null, "Please initialize ssh-keyman using: ssh-keyman -i\n");
     return;
   }
   if (KEYMAN_CONTENT) {
     const { active, available } = KEYMAN_CONTENT;
+    
+    // If no name provided, show interactive autocomplete menu
+    if (!name) {
+      const otherEnvs = available.filter((env) => env !== active);
+      
+      if (otherEnvs.length === 0) {
+        return logger("warning", "No other environments available to switch to");
+      }
+      
+      const answer = await inquirer.prompt([
+        {
+          type: "autocomplete",
+          name: "envName",
+          message: "Select environment to switch to:",
+          source: async (answersSoFar, input) => {
+            const filtered = otherEnvs.filter((env) =>
+              env.toLowerCase().includes((input || "").toLowerCase())
+            );
+            return filtered.map((env) => ({
+              name: env,
+              value: env,
+            }));
+          },
+          pageSize: 10,
+        },
+      ]);
+      name = answer.envName;
+    }
+    
     const env = available.find((env) => env === name);
+    
+    if (!env) {
+      return logger("error", `Environment '${name}' not found`);
+    }
+    
     if (env === active) {
-      return logger(
-        "error",
-        `${name} is already selected as existing environment`
-      );
+      return logger("warning", `${name} is already the active environment`);
     }
 
     delAndCopySync(SSH_PATH, path.join(KEYMAN_DIR_PATH, active));
-    logger("success", [`Saved current ssh config to '${active}'`]);
+    logger("success", `Saved current ssh config to '${active}'`);
     const NEW_ENV_PATH = path.join(KEYMAN_DIR_PATH, name);
     delAndCopySync(NEW_ENV_PATH, SSH_PATH);
     fs.writeFileSync(KEYMAN_PATH, JSON.stringify({ available, active: name }));
     logger("success", `Activated environment '${name}'`);
   } else {
-    logger("error", `Data directory is currupt, Please try uninstalling and reinstalling the package.`);
+    logger("error", "Data directory is corrupt. Please try uninstalling and reinstalling the package.");
   }
 };
 
-const deleteEnv = function (name) {
+const deleteEnv = async function (name) {
+  if (!IS_INITIALIZED) {
+    logger("error", "ssh-keyman is not initialized\n");
+    logger(null, "Please initialize ssh-keyman using: ssh-keyman -i\n");
+    return;
+  }
+  
+  let { active, available } = KEYMAN_CONTENT || {};
+  
+  // If no name provided, show interactive autocomplete menu
+  if (!name) {
+    const deletableEnvs = available.filter((env) => env !== "default" && env !== active);
+    
+    if (deletableEnvs.length === 0) {
+      return logger("warning", "No environments available to delete");
+    }
+    
+    const answer = await inquirer.prompt([
+      {
+        type: "autocomplete",
+        name: "envName",
+        message: "Select environment to delete:",
+        source: async (answersSoFar, input) => {
+          const filtered = deletableEnvs.filter((env) =>
+            env.toLowerCase().includes((input || "").toLowerCase())
+          );
+          return filtered.map((env) => ({
+            name: env,
+            value: env,
+          }));
+        },
+        pageSize: 10,
+      },
+    ]);
+    name = answer.envName;
+    
+    // Confirm deletion
+    const { confirmDelete } = await inquirer.prompt([
+      {
+        type: "confirm",
+        name: "confirmDelete",
+        message: `Are you sure you want to delete environment '${name}'?`,
+        default: false,
+      },
+    ]);
+    
+    if (!confirmDelete) {
+      return logger("info", "Deletion cancelled");
+    }
+  }
+  
   if (name === "default") {
     return logger("error", "Default environment cannot be deleted");
   }
-  let { active, available } = KEYMAN_CONTENT || {};
+  
   const exist = fs.existsSync(path.join(KEYMAN_DIR_PATH, name));
   if (active === name) {
     return logger(
@@ -220,8 +294,8 @@ const deleteEnv = function (name) {
 };
 
 const version = function() {
-  const package = require('../package.json');
-  return logger(null, 'ssh-keyman version : ' + package.version);
+  const pkg = require('../package.json');
+  console.log(chalk.cyan('ssh-keyman') + chalk.gray(' version ') + chalk.bold(pkg.version));
 }
 
 module.exports = {

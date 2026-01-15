@@ -1,11 +1,13 @@
 {
   "name": "ssh-keyman",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "A cli tool to manage multiple ssh keys and switch between different ssh keys with ease & grace.",
   "main": "index.js",
   "bin": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --coverage --ci --maxWorkers=2"
   },
   "repository": {
     "type": "git",
@@ -34,6 +36,35 @@
   },
   "homepage": "https://github.com/shahidullahkhankhattak/ssh-keyman#readme",
   "dependencies": {
-    "fs-extra": "^10.0.0"
+    "chalk": "^4.1.2",
+    "fs-extra": "^10.0.0",
+    "inquirer": "^8.2.5",
+    "inquirer-autocomplete-prompt": "^2.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.11"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/**/*.test.js",
+      "!src/__tests__/helpers.js",
+      "!**/node_modules/**"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.test.js",
+      "**/?(*.)+(spec|test).js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 50,
+        "functions": 55,
+        "lines": 55,
+        "statements": 55
+      }
+    }
   }
 }

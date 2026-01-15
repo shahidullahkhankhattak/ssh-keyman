@@ -1,0 +1,29 @@
+codecov:
+  require_ci_to_pass: yes
+
+coverage:
+  precision: 2
+  round: down
+  range: "50...100"
+  
+  status:
+    project:
+      default:
+        target: 55%
+        threshold: 5%
+        base: auto
+    patch:
+      default:
+        target: 50%
+        threshold: 5%
+
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: false
+
+ignore:
+  - "src/__tests__"
+  - "**/*.test.js"
+  - "**/node_modules/**"
+
