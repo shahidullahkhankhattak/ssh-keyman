@@ -282,7 +282,7 @@ const deleteEnv = async function (name) {
   }
   if (exist && available.find((env) => env === name)) {
     available.splice(available.indexOf(name), 1);
-    fs.rmdirSync(path.join(KEYMAN_DIR_PATH, name), { recursive: true });
+    fs.rmSync(path.join(KEYMAN_DIR_PATH, name), { recursive: true, force: true });
     fs.writeFileSync(
       KEYMAN_PATH,
       JSON.stringify({ active, available: available })

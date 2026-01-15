@@ -51,12 +51,26 @@
     "collectCoverageFrom": [
       "src/**/*.js",
       "!src/**/*.test.js",
+      "!src/**/*.spec.js",
       "!src/__tests__/helpers.js",
-      "!**/node_modules/**"
+      "!src/__tests__/testUtils.js",
+      "!**/node_modules/**",
+      "!**/coverage/**"
     ],
     "testMatch": [
       "**/__tests__/**/*.test.js",
       "**/?(*.)+(spec|test).js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "helpers.js",
+      "testUtils.js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/coverage/",
+      "/__tests__/helpers.js",
+      "/__tests__/testUtils.js"
     ],
     "coverageThreshold": {
       "global": {
