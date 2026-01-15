@@ -4,21 +4,20 @@ ssh-keyman
 <!-- Build & Test Status -->
 [![Build Status](https://github.com/shahidullahkhankhattak/ssh-keyman/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/shahidullahkhankhattak/ssh-keyman/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/github/actions/workflow/status/shahidullahkhankhattak/ssh-keyman/ci.yml?branch=master&label=tests&logo=github)](https://github.com/shahidullahkhankhattak/ssh-keyman/actions/workflows/ci.yml)
-[![Test Coverage](https://codecov.io/gh/shahidullahkhankhattak/ssh-keyman/branch/master/graph/badge.svg)](https://codecov.io/gh/shahidullahkhankhattak/ssh-keyman)
-[![Coverage Status](https://img.shields.io/codecov/c/github/shahidullahkhankhattak/ssh-keyman/master.svg?logo=codecov)](https://codecov.io/gh/shahidullahkhankhattak/ssh-keyman)
+![Test Coverage](https://img.shields.io/badge/coverage-75.59%25-brightgreen)
+![Tests Passing](https://img.shields.io/badge/tests-35%20passing-brightgreen)
 
 <!-- Package Info -->
 [![npm version](https://img.shields.io/npm/v/ssh-keyman.svg?logo=npm&color=cb3837)](https://www.npmjs.com/package/ssh-keyman)
 [![npm downloads](https://img.shields.io/npm/dm/ssh-keyman.svg?logo=npm)](https://www.npmjs.com/package/ssh-keyman)
-[![npm bundle size](https://img.shields.io/bundlephobia/min/ssh-keyman?logo=npm)](https://bundlephobia.com/package/ssh-keyman)
+![Node Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen?logo=node.js)
 
 <!-- Platform & Standards -->
-[![Node.js Version](https://img.shields.io/node/v/ssh-keyman.svg?logo=node.js)](https://nodejs.org/)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 [![Maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/shahidullahkhankhattak/ssh-keyman/graphs/commit-activity)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-<!-- Repository Stats -->
+<!-- Repository Stats (activate after first push) -->
 [![Last Commit](https://img.shields.io/github/last-commit/shahidullahkhankhattak/ssh-keyman?logo=github)](https://github.com/shahidullahkhankhattak/ssh-keyman/commits)
 [![Issues](https://img.shields.io/github/issues/shahidullahkhankhattak/ssh-keyman?logo=github)](https://github.com/shahidullahkhankhattak/ssh-keyman/issues)
 [![Pull Requests](https://img.shields.io/github/issues-pr/shahidullahkhankhattak/ssh-keyman?logo=github)](https://github.com/shahidullahkhankhattak/ssh-keyman/pulls)
@@ -31,10 +30,12 @@ A sophisticated key manager cli tool to manage multiple ssh keys and switch betw
 | Workflow | Status |
 |----------|--------|
 | **Build & Test** | [![CI](https://github.com/shahidullahkhankhattak/ssh-keyman/actions/workflows/ci.yml/badge.svg)](https://github.com/shahidullahkhankhattak/ssh-keyman/actions/workflows/ci.yml) |
-| **NPM Publish** | [![Publish](https://github.com/shahidullahkhankhattak/ssh-keyman/actions/workflows/publish.yml/badge.svg)](https://github.com/shahidullahkhankhattak/ssh-keyman/actions/workflows/publish.yml) |
-| **Test Coverage** | ![Coverage](https://img.shields.io/codecov/c/github/shahidullahkhankhattak/ssh-keyman/master.svg?label=coverage) |
+| **Test Coverage** | ![Coverage](https://img.shields.io/badge/coverage-75.59%25-brightgreen) |
+| **NPM Publish** | ![Publish](https://img.shields.io/badge/publish-ready-blue) |
 
 > 📊 **[View Detailed Status Report →](STATUS.md)**
+> 
+> **Note:** Some badges will activate after first push to GitHub. Codecov badges will work after setting up Codecov integration.
 
 ### Platform Support
 

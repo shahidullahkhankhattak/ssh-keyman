@@ -35,6 +35,10 @@
     "url": "https://github.com/shahidullahkhankhattak/ssh-keyman/issues"
   },
   "homepage": "https://github.com/shahidullahkhankhattak/ssh-keyman#readme",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
   "dependencies": {
     "chalk": "^4.1.2",
     "fs-extra": "^10.0.0",
