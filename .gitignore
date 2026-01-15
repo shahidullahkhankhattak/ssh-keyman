@@ -4,3 +4,7 @@ coverage/
 .DS_Store
 .vscode/
 .idea/
+
+# Test reports
+junit.xml
+test-results/
