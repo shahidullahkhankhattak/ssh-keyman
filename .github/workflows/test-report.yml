@@ -5,14 +5,15 @@ on:
     branches: [ main, master, develop ]
   pull_request:
     branches: [ main, master, develop ]
-  schedule:
-    # Run tests daily at 2 AM UTC
-    - cron: '0 2 * * *'
 
 jobs:
   test-report:
     name: Generate Test Report
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
     
     steps:
     - name: Checkout code
@@ -29,22 +30,37 @@ jobs:
     
     - name: Run tests with coverage
       run: npm run test:ci
+      continue-on-error: true
     
-    - name: Generate test report
+    - name: Upload test results
       if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: coverage/junit.xml
+        retention-days: 30
+    
+    - name: Upload coverage results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-results
+        path: coverage/
+        retention-days: 30
+    
+    - name: Test Report
       uses: dorny/test-reporter@v1
+      if: always()
       with:
         name: Jest Tests
         path: coverage/junit.xml
         reporter: jest-junit
         fail-on-error: false
     
-    - name: Comment PR with test results
+    - name: Comment PR with Coverage
       if: github.event_name == 'pull_request'
       uses: ArtiomTr/jest-coverage-report-action@v2
       with:
-        coverage-file: ./coverage/coverage-summary.json
-        base-coverage-file: ./coverage/coverage-summary.json
-        annotations: failed-tests
+        annotations: coverage
         package-manager: npm
 

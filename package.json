@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
     "@types/jest": "^29.5.11"
   },
   "jest": {
@@ -79,6 +80,20 @@
         "lines": 55,
         "statements": 55
       }
-    }
+    },
+    "reporters": [
+      "default",
+      [
+        "jest-junit",
+        {
+          "outputDirectory": "coverage",
+          "outputName": "junit.xml",
+          "classNameTemplate": "{classname}",
+          "titleTemplate": "{title}",
+          "ancestorSeparator": " › ",
+          "usePathForSuiteName": "true"
+        }
+      ]
+    ]
   }
 }
