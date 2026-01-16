@@ -34,8 +34,6 @@ A sophisticated key manager cli tool to manage multiple ssh keys and switch betw
 | **NPM Publish** | ![Publish](https://img.shields.io/badge/publish-ready-blue) |
 
 > 📊 **[View Detailed Status Report →](STATUS.md)**
-> 
-> **Note:** Some badges will activate after first push to GitHub. Codecov badges will work after setting up Codecov integration.
 
 ### Platform Support
 
